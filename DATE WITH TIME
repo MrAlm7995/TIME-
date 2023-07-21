@@ -1,0 +1,55 @@
+import datetime
+import pytz
+
+class DateUtility:
+
+  def __init__(self):
+    pass
+
+  def convert_dt(self, from_dt, from_tz, to_tz):
+    """Converts a datetime object from one timezone to another."""
+    return from_dt.astimezone(to_tz)
+
+  def add_dt(self, dt, days):
+    """Adds the specified number of days to a datetime object."""
+    return dt + datetime.timedelta(days=days)
+
+  def sub_dt(self, dt, days):
+    """Subtracts the specified number of days from a datetime object."""
+    return dt - datetime.timedelta(days=days)
+
+  def get_days(self, dt1, dt2):
+    """Returns the number of days between two datetime objects."""
+    delta = dt2 - dt1
+    return delta.days
+
+  def get_days_exclude_we(self, dt1, dt2):
+    """Returns the number of days between two datetime objects, excluding weekends."""
+    business_days = 0
+    for day in range(get_number_of_days_between(dt1, dt2)):
+      dt = dt1 + datetime.timedelta(days=day)
+      if dt.weekday() not in (5, 6):
+        business_days += 1
+
+    return business_days
+
+  def get_days_since_epoch(self, dt):
+    """Returns the number of days since the epoch."""
+    return (dt - datetime.datetime(1970, 1, 1)).days
+
+  def get_business_days(self, dt1, dt2):
+    """Returns the number of business days between two datetime objects, excluding holidays."""
+    holidays = []
+    with open("holidays.dat", "r") as f:
+      for line in f:
+        timezone, date, holiday = line.split(",")
+        holidays.append((timezone, datetime.datetime.strptime(date, "%Y%m%d")))
+
+    business_days = 0
+    for day in range(get_number_of_days_between(dt1, dt2)):
+      dt = dt1 + datetime.timedelta(days=day)
+      tz = dt.tzinfo
+      if tz not in holidays:
+        business_days += 1
+
+    return business_days
